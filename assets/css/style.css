@@ -201,17 +201,31 @@ pre code { background: none; color: inherit; padding: 0; }
 .link-card-desc { color: var(--gray-500); font-size: 0.9rem; }
 
 /* ── Post images (portrait phone screenshots) ───────────── */
-/* Cap width and center so tall screenshots don't fill the column. */
-.post-content img {
+/* Cap BOTH width and height and center, so tall screenshots don't fill the
+   column. Content renders directly under .site-main (no .post-content wrapper),
+   so target that. width:auto lets max-height bound portrait images. */
+.site-main img {
   display: block;
-  width: 100%;
+  width: auto;
   max-width: 300px;
+  max-height: 460px;
   margin: 1.6em auto 0.4em;
   border: 1px solid var(--gray-200);
+  border-radius: 10px;
   box-shadow: 0 8px 24px rgba(17, 24, 39, 0.12);
 }
+/* Keep the header logo unaffected by the post-image rule. */
+.site-header .brand-logo {
+  width: auto;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
 /* Standalone italic caption directly under an image. */
-.post-content p:has(> em:only-child) {
+.site-main p:has(> em:only-child) {
   text-align: center;
   color: var(--gray-500);
   font-size: 0.88rem;
