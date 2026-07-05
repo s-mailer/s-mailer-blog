@@ -200,6 +200,24 @@ pre code { background: none; color: inherit; padding: 0; }
 }
 .link-card-desc { color: var(--gray-500); font-size: 0.9rem; }
 
+/* ── Post images (portrait phone screenshots) ───────────── */
+/* Cap width and center so tall screenshots don't fill the column. */
+.post-content img {
+  display: block;
+  width: 100%;
+  max-width: 300px;
+  margin: 1.6em auto 0.4em;
+  border: 1px solid var(--gray-200);
+  box-shadow: 0 8px 24px rgba(17, 24, 39, 0.12);
+}
+/* Standalone italic caption directly under an image. */
+.post-content p:has(> em:only-child) {
+  text-align: center;
+  color: var(--gray-500);
+  font-size: 0.88rem;
+  margin-top: 0.2em;
+}
+
 /* ── Responsive ─────────────────────────────────────────── */
 @media (max-width: 600px) {
   body { font-size: 17px; }
