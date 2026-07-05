@@ -5,4 +5,4 @@ Content for the S-Mailer blog, published at
 
 Posts live in `_posts/` as `YYYY-MM-DD-title.md`.
 
-© Smartek, Lda. — MIT licensed (see [LICENSE](LICENSE)).
+© Smartek — MIT licensed (see [LICENSE](LICENSE)).

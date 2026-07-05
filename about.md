@@ -18,7 +18,7 @@ from the dashboard.
   connections, whichever fits your volume and budget.
 - **Transparent billing.** Top up tokens and pay per message — no surprises.
 - **Built for Mozambique.** Local support and payment options, made by
-  [Smartek, Lda.](https://smartek.co.mz)
+  [Smartek](https://smartek.co.mz)
 
 ### How it works
 

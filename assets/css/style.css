@@ -157,6 +157,49 @@ pre code { background: none; color: inherit; padding: 0; }
 .footer-meta { color: var(--gray-500); font-size: 0.85rem; margin: 0; }
 .footer-meta a { color: var(--gray-600); }
 
+/* ── Useful-links cards ─────────────────────────────────── */
+.link-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin: 1.5em 0 0.5em;
+}
+.link-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 20px;
+  border: 1px solid var(--gray-200);
+  border-radius: 12px;
+  background: #fff;
+  color: inherit;
+  transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease;
+}
+.link-card:hover {
+  text-decoration: none;
+  border-color: var(--blue-600);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.12);
+  transform: translateY(-2px);
+}
+.link-card i {
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: var(--blue-600);
+  background: var(--blue-50, #eff6ff);
+  border-radius: 10px;
+  margin-bottom: 8px;
+}
+.link-card-title {
+  font-weight: 700;
+  color: var(--gray-900);
+  font-size: 1.05rem;
+}
+.link-card-desc { color: var(--gray-500); font-size: 0.9rem; }
+
 /* ── Responsive ─────────────────────────────────────────── */
 @media (max-width: 600px) {
   body { font-size: 17px; }
@@ -166,4 +209,5 @@ pre code { background: none; color: inherit; padding: 0; }
   .site-nav a:not(.nav-cta) { font-size: 14px; }
   .site-main { padding: 32px 20px 48px; }
   h1, .post-link { font-size: 1.6rem; }
+  .link-cards { grid-template-columns: 1fr; }
 }

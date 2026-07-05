@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   {%- if site.plugins contains 'jekyll-seo-tag' -%}{% seo %}{%- endif -%}
   {%- if site.plugins contains 'jekyll-feed' -%}{%- feed_meta -%}{%- endif -%}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" referrerpolicy="no-referrer">
   <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
 </head>
 <body>
@@ -30,7 +31,7 @@
     <div class="container footer-inner">
       <p class="footer-brand">S-Mailer — multichannel messaging for businesses.</p>
       <p class="footer-meta">
-        &copy; {{ site.time | date: '%Y' }} Smartek, Lda. All rights reserved.
+        &copy; {{ site.time | date: '%Y' }} Smartek. All rights reserved.
         &middot; <a href="https://mailer.smartek.co.mz">mailer.smartek.co.mz</a>
         &middot; <a href="mailto:hello@mailer.smartek.co.mz">hello@mailer.smartek.co.mz</a>
       </p>
