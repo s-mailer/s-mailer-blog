@@ -27,8 +27,8 @@ outside the Play Store, allow installs from your browser or file manager when
 prompted. Open the app and grant the SMS and phone permissions it asks for — it
 needs these to read your SIMs and send messages.
 
-![Install and grant permissions](/assets/img/guide-01-permissions.png)
-*Placeholder: the permissions screen on first launch.*
+![Install and grant permissions](/assets/img/guide-01-permissions.jpg)
+*The permissions screen on first launch.*
 
 ## Step 2 — Copy the pairing payload
 
@@ -36,8 +36,8 @@ On first launch the app generates a **pairing payload** — a small block of JSO
 that identifies this device (its ID, a one-time pairing code, and its SIMs). Tap
 **Copy** to put it on your clipboard.
 
-![Copy the pairing payload](/assets/img/guide-02-pairing.png)
-*Placeholder: the pairing screen with the Copy button.*
+![Copy the pairing payload](/assets/img/guide-02-pairing.jpg)
+*The pairing screen with the Copy button.*
 
 ## Step 3 — Register the sender in the dashboard
 
@@ -49,8 +49,8 @@ that identifies this device (its ID, a one-time pairing code, and its SIMs). Tap
 
 S-Mailer then pairs your device to the new sender.
 
-![Register the sender](/assets/img/guide-03-register.png)
-*Placeholder: the sender registration form in the dashboard.*
+![Register the sender](/assets/img/guide-03-register.jpg)
+*The sender registration form in the dashboard.*
 
 ## Step 4 — Confirm it is paired
 
@@ -58,8 +58,8 @@ Back on the phone, the app switches to its dashboard and shows **"Paired with
 &lt;your company&gt;"**. Keep the app running and the phone online — it now holds a
 live connection to S-Mailer and waits for messages to send.
 
-![Paired and ready](/assets/img/guide-04-paired.png)
-*Placeholder: the app showing the paired status.*
+![Paired and ready](/assets/img/guide-04-paired.jpg)
+*The app showing the paired status.*
 
 ## Step 5 — Send your first message
 
