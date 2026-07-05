@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="{{ site.lang | default: 'en' }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {%- if site.plugins contains 'jekyll-seo-tag' -%}{% seo %}{%- endif -%}
+  {%- if site.plugins contains 'jekyll-feed' -%}{%- feed_meta -%}{%- endif -%}
+  <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="{{ '/' | relative_url }}">
+        <img src="{{ '/assets/img/logo.png' | relative_url }}" alt="S-Mailer logo" class="brand-logo">
+        <span class="brand-name">S-Mailer</span>
+      </a>
+      <nav class="site-nav">
+        <a href="{{ '/' | relative_url }}">Home</a>
+        <a href="{{ '/about/' | relative_url }}">About</a>
+        <a class="nav-cta" href="https://mailer.smartek.co.mz">Dashboard</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container site-main">
+    {{ content }}
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p class="footer-brand">S-Mailer — multichannel messaging for businesses.</p>
+      <p class="footer-meta">
+        &copy; {{ site.time | date: '%Y' }} Smartek, Lda. All rights reserved.
+        &middot; <a href="https://mailer.smartek.co.mz">mailer.smartek.co.mz</a>
+        &middot; <a href="mailto:hello@mailer.smartek.co.mz">hello@mailer.smartek.co.mz</a>
+      </p>
+    </div>
+  </footer>
+</body>
+</html>
