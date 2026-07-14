@@ -1,0 +1,50 @@
+name: Deploy blog to GitHub Pages
+
+# The Jekyll site lives in landing/, not at the repo root. GitHub Pages' built-in
+# ("legacy") build only accepts / or /docs as a source, so the site is built here
+# and published as an artifact instead. The Pages source must be set to "GitHub
+# Actions" for this to deploy:
+#   gh api repos/s-mailer/s-mailer-blog/pages -X PUT -f build_type=workflow
+#
+# The site is still served at the root of blog.mailer.smartek.co.mz — landing/ is
+# the build source, not a URL prefix, so baseurl stays empty and no post URL moves.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Never let two deploys race; queue them instead of cancelling a running one.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./landing
+          destination: ./_site
+
+      - uses: actions/upload-pages-artifact@v3
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
