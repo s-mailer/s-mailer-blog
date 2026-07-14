@@ -61,11 +61,44 @@ Every delivery looks like this:
 | `received_at` | RFC 3339 UTC timestamp | Ordering and auditing. Don't trust arrival order of HTTP requests — sort on this. |
 | `sender_id` | UUID of the sender it arrived on | Route by sender when one backend serves several numbers. |
 | `client_id` | UUID of the owning client | Your account id. Handy when one endpoint serves multiple S-Mailer accounts. |
-| `payment_required` | `true` when the message was kept but not charged | Your balance was too low. See [Security & best practices](#security--best-practices). |
+| `payment_required` | `true` when your balance was too low to charge for the message | The delivery is **locked** — it carries no body. See [Locked messages](#locked-messages-when-your-balance-runs-out). |
 
 Deliberately absent: device ids, SIM slots, and other transport details. They mean
 nothing outside one provider, so they stay on the stored message's metadata rather
 than in your contract.
+
+### Locked messages: when your balance runs out
+
+An inbound message is never dropped over billing — but it is not handed over for
+free either. If a message arrives when your balance is too low to be charged for
+it, S-Mailer stores it in full and sends your webhook a **locked notice** instead
+of the message:
+
+```json
+{
+  "id":               "9f2c1a7e-4b3d-4c8f-9e21-5a7b8c0d1e2f",
+  "payment_required": true,
+  "message":          null
+}
+```
+
+No body, no `from`, no `to`. The content is safe in S-Mailer and readable in the
+dashboard under **Messages → Inbound**, where the message is marked `Locked`.
+
+To get the real delivery: top up, then hit **Re-trigger** on that message. S-Mailer
+charges you for it and POSTs the full payload — the one at the top of this section
+— to the same webhooks, with `payment_required: false`. Re-triggering twice is
+refused, so you are never charged twice for one message.
+
+So a receiver needs one branch:
+
+```js
+if (msg.payment_required) {
+  // Locked: the body is not here. Top up and re-trigger from the dashboard.
+  alertOps(`inbound ${msg.id} is locked — S-Mailer balance is empty`);
+  return;
+}
+```
 
 ---
 
@@ -208,8 +241,10 @@ if (alreadyProcessed($msg['id'])) {
 }
 markProcessed($msg['id']);
 
-if ($msg['payment_required']) {
-    error_log("inbound {$msg['id']} arrived unpaid — top up your balance");
+if (!empty($msg['payment_required'])) {
+    // Locked — there is no body to read. Top up, then re-trigger it.
+    error_log("inbound {$msg['id']} is locked — S-Mailer balance is empty");
+    return;
 }
 
 if (stripos($msg['body'], 'PAY') !== false) {
@@ -230,7 +265,9 @@ app.post('/webhooks/s-mailer', express.json(), async (req, res) => {
   await remember(msg.id);
 
   if (msg.payment_required) {
-    console.warn(`inbound ${msg.id} arrived unpaid — top up your balance`);
+    // Locked — there is no body to read. Top up, then re-trigger it.
+    console.warn(`inbound ${msg.id} is locked — S-Mailer balance is empty`);
+    return;
   }
 
   if (msg.body.toLowerCase().includes('pay')) {
@@ -252,8 +289,10 @@ def s_mailer_inbound():
         return "", 204
     remember(msg["id"])
 
-    if msg["payment_required"]:
-        app.logger.warning("inbound %s arrived unpaid", msg["id"])
+    if msg.get("payment_required"):
+        # Locked — there is no body to read. Top up, then re-trigger it.
+        app.logger.warning("inbound %s is locked — S-Mailer balance is empty", msg["id"])
+        return "", 204
 
     # Hand off to a worker; keep the response fast.
     queue.enqueue(process_inbound, msg)
@@ -286,12 +325,14 @@ your callback URL *is* the secret, so treat it like one:
   are yours, and never trust `body` straight into a shell, a query, or an eval.
 - If your infrastructure allows it, restrict the endpoint to S-Mailer's egress IP.
 
-**Handle `payment_required`.** When it's `true`, the message was received and stored
-but your account could not be charged for it — your token balance was too low.
-Inbound is never dropped over billing, so you still get the message. Treat the flag
-as an operational alert: log it, notify whoever owns the account, and top up. If it
-stays `true` across many messages, someone is going to notice the invoice before
-they notice the logs.
+**Handle `payment_required`.** When it's `true` the delivery is locked: you get the
+message id and nothing else, because your balance was too low to charge for it (see
+[Locked messages](#locked-messages-when-your-balance-runs-out)). Never parse a
+locked notice as if it were a message — `body`, `from` and `to` are simply not
+there. Treat it as an operational alert: log it, page whoever owns the account, and
+top up. Then re-trigger the message from the dashboard to receive it in full. Better
+still, set a low-balance alert under **Dashboard → Profile** and never see a locked
+delivery at all.
 
 **Keywords are substrings.** `pay` inside `repayment` will fire your trigger. Pick
 keywords with enough shape to avoid accidents, and validate the full body in your

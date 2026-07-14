@@ -21,6 +21,18 @@
         <a class="nav-cta" href="https://mailer.smartek.co.mz">Dashboard</a>
       </nav>
     </div>
+
+    <!-- Revealed by the search script: with JS off (or the file missing) a dead
+         input that swallows what you type is worse than no input at all. -->
+    <div class="site-search container" id="search-wrap" hidden>
+      <div class="search-field">
+        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+        <input type="search" id="search-input" autocomplete="off"
+               placeholder="Search posts by title, tag, or content…"
+               aria-label="Search posts" aria-controls="search-results">
+      </div>
+      <ul class="search-results" id="search-results" role="listbox" aria-label="Search results"></ul>
+    </div>
   </header>
 
   <main class="container site-main">
@@ -37,5 +49,54 @@
       </p>
     </div>
   </footer>
+
+  <script src="{{ '/assets/js/simple-jekyll-search.min.js' | relative_url }}"></script>
+  <script>
+    (function () {
+      var wrap = document.getElementById('search-wrap');
+      if (!wrap || typeof SimpleJekyllSearch === 'undefined') return;
+
+      var input   = document.getElementById('search-input');
+      var results = document.getElementById('search-results');
+
+      SimpleJekyllSearch({
+        searchInput: input,
+        resultsContainer: results,
+        json: '{{ "/search.json" | relative_url }}',
+        searchResultTemplate:
+          '<li class="search-result"><a href="{url}">' +
+            '<span class="search-result-title">{title}</span>' +
+            '<span class="search-result-meta">{date} &middot; {category}</span>' +
+            '<span class="search-result-excerpt">{excerpt}</span>' +
+          '</a></li>',
+        noResultsText: '<li class="search-empty">No posts match that.</li>',
+        limit: 8,
+        fuzzy: false
+      });
+
+      wrap.hidden = false;
+
+      // The list is only in the layout when it has something to say, so an empty
+      // query leaves the page exactly as it was.
+      function sync() {
+        results.classList.toggle('is-open', input.value.trim() !== '');
+      }
+      input.addEventListener('input', sync);
+      input.addEventListener('focus', sync);
+
+      input.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+          input.value = '';
+          results.innerHTML = '';
+          sync();
+          input.blur();
+        }
+      });
+
+      document.addEventListener('click', function (e) {
+        if (!wrap.contains(e.target)) results.classList.remove('is-open');
+      });
+    }());
+  </script>
 </body>
 </html>

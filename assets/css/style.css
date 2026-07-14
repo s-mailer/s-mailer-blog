@@ -232,6 +232,99 @@ pre code { background: none; color: inherit; padding: 0; }
   margin-top: 0.2em;
 }
 
+/* ── Search ─────────────────────────────────────────────── */
+.site-search {
+  position: relative;
+  padding-bottom: 12px;
+}
+.search-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 14px;
+  border: 1px solid var(--gray-200);
+  border-radius: 10px;
+  background: var(--gray-50);
+  transition: border-color .15s, background .15s, box-shadow .15s;
+}
+.search-field:focus-within {
+  border-color: var(--blue-600);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+.search-field i { color: var(--gray-400); font-size: 14px; }
+.search-field input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  font: inherit;
+  font-size: 15px;
+  color: var(--gray-900);
+}
+.search-field input::placeholder { color: var(--gray-400); }
+/* Safari draws its own clear button on type=search; drop it for the plain look. */
+.search-field input::-webkit-search-decoration,
+.search-field input::-webkit-search-cancel-button { -webkit-appearance: none; }
+
+/* Overlaid, so results never push the page down as you type. */
+.search-results {
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  top: 100%;
+  z-index: 20;
+  display: none;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  max-height: 60vh;
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid var(--gray-200);
+  border-radius: 10px;
+  box-shadow: 0 12px 32px rgba(17, 24, 39, 0.14);
+}
+.search-results.is-open { display: block; }
+.search-result a {
+  display: block;
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: var(--gray-900);
+}
+.search-result a:hover,
+.search-result a:focus {
+  background: var(--gray-50);
+  text-decoration: none;
+}
+.search-result-title {
+  display: block;
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 1.4;
+}
+.search-result-meta {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--teal-600);
+  text-transform: uppercase;
+  letter-spacing: .03em;
+}
+.search-result-excerpt {
+  display: block;
+  margin-top: 4px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--gray-500);
+}
+.search-empty {
+  padding: 12px;
+  font-size: 14px;
+  color: var(--gray-500);
+}
+
 /* ── Responsive ─────────────────────────────────────────── */
 @media (max-width: 600px) {
   body { font-size: 17px; }
@@ -242,4 +335,6 @@ pre code { background: none; color: inherit; padding: 0; }
   .site-main { padding: 32px 20px 48px; }
   h1, .post-link { font-size: 1.6rem; }
   .link-cards { grid-template-columns: 1fr; }
+  .search-field { padding: 8px 12px; }
+  .search-field input { font-size: 16px; } /* iOS zooms in on anything smaller. */
 }
