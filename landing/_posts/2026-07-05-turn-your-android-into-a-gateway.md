@@ -79,7 +79,42 @@ curl -X POST https://api.mailer.smartek.co.mz/api/v1/send \
 ```
 
 Your phone receives the send request over its live connection and sends the SMS
-through its SIM. The delivery status flows back to your dashboard.
+through its SIM. The delivery status flows back to your dashboard — and, as of the
+latest app, all the way back to `delivered` (see below).
+
+---
+
+## Choose which SIM sends (app 0.1.3)
+
+Got two SIMs in the gateway phone? By default S-Mailer sends through the phone's
+preferred SIM. As of **app 0.1.3** you can pick the sending SIM yourself:
+
+1. Open the app and go to **Settings**.
+2. Under **Send SIM**, choose **System default** or a specific slot (each active
+   SIM is listed with its carrier and number).
+3. Tap **Save**.
+
+Every message this gateway sends from then on goes out on the SIM you picked —
+handy when one line has a better SMS bundle or a specific sender identity. Grab
+the [latest APK](https://github.com/s-mailer/s-mailer-blog/releases/latest/download/s-mailer.apk)
+to get the picker.
+
+## From `sent` to `delivered`: delivery reports
+
+Android hands the app a **delivery report** once the carrier confirms the SMS
+reached (or failed to reach) the recipient's handset. The app relays that report
+back through the connection, so a message can move past `sent`:
+
+```
+phone radio → app (delivery report) → co1 gateway → S-Mailer Core → your status webhook
+```
+
+Core flips the recipient from `sent` to `delivered` (or `failed`) and, if you've
+configured a **status webhook**, POSTs you the change. Set the status webhook URL
+under **Dashboard → Webhooks** — it's separate from the inbound webhook, and you
+can also override it per message with a `webhook_url` on the send request. See the
+[inbound & status webhooks guide]({% post_url 2026-07-14-inbound-webhooks-triggers %})
+for the payload.
 
 ---
 
@@ -89,9 +124,11 @@ through its SIM. The delivery status flows back to your dashboard.
   stable connection delivers fastest.
 - **Watch your SIM limits.** Carriers may rate-limit or block high SMS volumes —
   spread load across multiple devices for scale.
-- **`sent` is not `delivered`.** On the Android gateway, `sent` means the message
-  was handed to the radio. For guaranteed delivery reports, use a carrier-grade
-  sending option.
+- **`sent` means handed to the radio** — but Android delivery reports can update
+  it to `delivered`. The gateway relays the carrier's delivery report back through
+  co1 to S-Mailer Core, which flips the status and fires your status webhook (see
+  [From `sent` to `delivered`](#from-sent-to-delivered-delivery-reports)). Delivery
+  reports depend on the carrier honouring them, so treat `delivered` as best-effort.
 
 That's it — you've turned an ordinary Android phone into a programmable SMS
 gateway. Happy sending!

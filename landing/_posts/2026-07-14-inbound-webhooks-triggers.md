@@ -177,7 +177,12 @@ dedupe on `id`.
 
 ## Setting it up in Dash
 
-Everything lives under **Dashboard → Inbound (Webhooks & Triggers)**.
+Everything lives under **Dashboard → Webhooks**.
+
+> **Route renamed.** This page used to live at `/dashboard/inbound`; it's now at
+> **`/dashboard/webhooks`** (the old path no longer resolves). The page also hosts
+> a second field — the **Status Webhook** — for delivery-status updates on messages
+> you *send*, described below.
 
 **Set your webhook URL.** Paste an `http(s)` URL into the webhook field and save.
 Every message arriving on any of your senders is POSTed there. Clear the field to
@@ -195,6 +200,48 @@ phone. During development, point the callback at a tunnel
 raw request. If nothing arrives, check that the trigger is active, that the keyword
 really appears in the body you sent, and that your endpoint is reachable from the
 public internet.
+
+---
+
+## Status webhooks: delivery updates on messages you send
+
+Inbound webhooks fire on messages that arrive. The **status webhook** is the
+mirror image: it fires when a message you *sent* changes state — most importantly
+when an Android gateway relays a carrier delivery report and Core moves a recipient
+from `sent` to `delivered` (or `failed`).
+
+Set the default **Status Webhook URL** in the same place — **Dashboard →
+Webhooks**, in its own field next to the inbound webhook. You can also override it
+for a single message by passing `webhook_url` on the
+[send request](https://api.mailer.smartek.co.mz). Set neither and no status webhook
+fires.
+
+The payload is its own shape — a status change, not a message:
+
+```json
+{
+  "message_id":       "7d3e9b21-6c44-4f18-a2e5-1b9c8d0f4a77",
+  "recipient":        "+258840000000",
+  "old_status":       "sent",
+  "new_status":       "delivered",
+  "delivery_receipt": { "status": "delivered", "timestamp": "2026-07-14T15:31:04+00:00" },
+  "timestamp":        "2026-07-14T15:31:04+00:00"
+}
+```
+
+| Field | What it is |
+|---|---|
+| `message_id` | UUID of the message you sent — your correlation key back to the send call. |
+| `recipient` | The address the update is about. |
+| `old_status` | Status before this change (e.g. `sent`). |
+| `new_status` | Status after (`delivered` or `failed`). |
+| `delivery_receipt` | The provider's raw receipt (status, timestamp, any error code). |
+| `timestamp` | When the change was recorded, RFC 3339 UTC. |
+
+Same handling rules as inbound: answer `2xx` fast, dedupe on `message_id`, and
+protect the URL (it isn't signed). See [turning an Android phone into a
+gateway]({% post_url 2026-07-05-turn-your-android-into-a-gateway %}) for where the
+delivery reports come from.
 
 ---
 
@@ -351,8 +398,8 @@ To get started:
    gateway]({% post_url 2026-07-05-turn-your-android-into-a-gateway %}) if you don't
    have one yet.
 2. Stand up an endpoint that answers `2xx` and queues its work.
-3. Set the webhook URL under **Dashboard → Inbound**, text your number, and watch it
-   arrive.
+3. Set the webhook URL under **Dashboard → Webhooks**, text your number, and watch
+   it arrive.
 4. Add triggers once you need to split traffic across applications or tenants.
 
 Then close the loop: reply to inbound messages with the
