@@ -26,7 +26,7 @@ That single mechanism unlocks a lot: confirm payments the instant the mobile mon
 SMS arrives, open a support ticket from a text message, let a customer reply
 `CANCEL` to an order and have your backend act on it.
 
-**The payload is the same for every channel.** SMS today, WhatsApp or email
+**The payload is the same for every channel.** SMS and WhatsApp today, email
 tomorrow — `from` and `to` carry whatever addresses that channel uses, and a
 `channel` field tells you how to read them. One parser handles all of them, so
 adding a channel later doesn't mean rewriting your receiver.
@@ -39,17 +39,20 @@ Every delivery looks like this:
 
 ```json
 {
-  "id":               "9f2c1a7e-4b3d-4c8f-9e21-5a7b8c0d1e2f",
-  "from":             "+258840000000",
-  "to":               "+258849999999",
-  "channel":          "sms",
   "body":             "PAY 1500 order 4471",
+  "channel":          "sms",
+  "client_id":        "1a2b3c4d-5e6f-4071-8293-a4b5c6d7e8f9",
+  "from":             "+258840000000",
+  "id":               "9f2c1a7e-4b3d-4c8f-9e21-5a7b8c0d1e2f",
+  "payment_required": false,
   "received_at":      "2026-07-14T15:30:00+00:00",
   "sender_id":        "3c6f2b10-8d44-4a19-b7e5-2f9a1c4d6e88",
-  "client_id":        "1a2b3c4d-5e6f-4071-8293-a4b5c6d7e8f9",
-  "payment_required": false
+  "to":               "+258849999999"
 }
 ```
+
+Keys arrive **alphabetically ordered**, as shown. Don't depend on it — parse by
+name, not by position — but that is what lands on the wire.
 
 | Field | What it is | What you do with it |
 |---|---|---|
@@ -61,7 +64,7 @@ Every delivery looks like this:
 | `received_at` | RFC 3339 UTC timestamp | Ordering and auditing. Don't trust arrival order of HTTP requests — sort on this. |
 | `sender_id` | UUID of the sender it arrived on | Route by sender when one backend serves several numbers. |
 | `client_id` | UUID of the owning client | Your account id. Handy when one endpoint serves multiple S-Mailer accounts. |
-| `payment_required` | `true` when your balance was too low to charge for the message | The delivery is **locked** — it carries no body. See [Locked messages](#locked-messages-when-your-balance-runs-out). |
+| `payment_required` | `true` when your balance was too low to charge for the message | The delivery is **locked**: `from` and `body` come through as `null`. See [Locked messages](#locked-messages-when-your-balance-runs-out). |
 
 Deliberately absent: device ids, SIM slots, and other transport details. They mean
 nothing outside one provider, so they stay on the stored message's metadata rather
@@ -76,19 +79,32 @@ of the message:
 
 ```json
 {
+  "body":             null,
+  "channel":          "sms",
+  "client_id":        "017cb3ea-af74-5886-f818-b8a30743e222",
+  "from":             null,
   "id":               "9f2c1a7e-4b3d-4c8f-9e21-5a7b8c0d1e2f",
   "payment_required": true,
-  "message":          null
+  "received_at":      "2026-07-14T15:30:00+00:00",
+  "sender_id":        "3f1b2c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d",
+  "to":               "+258840000001"
 }
 ```
 
-No body, no `from`, no `to`. The content is safe in S-Mailer and readable in the
-dashboard under **Messages → Inbound**, where the message is marked `Locked`.
+**The shape never changes.** Every field is always present — a locked delivery
+only nulls the ones you have not paid for, so you parse one payload and branch on
+`payment_required` alone, never on which fields happen to exist.
+
+`from` is withheld along with `body`: knowing who is contacting you, and how
+often, is worth something on its own. `to`, `channel` and `received_at` describe
+your own sender rather than the person who wrote to you, so they stay. The
+content is safe in S-Mailer and readable in the dashboard under
+**Messages → Inbound**, where the message is marked `Locked`.
 
 To get the real delivery: top up, then hit **Re-trigger** on that message. S-Mailer
-charges you for it and POSTs the full payload — the one at the top of this section
-— to the same webhooks, with `payment_required: false`. Re-triggering twice is
-refused, so you are never charged twice for one message.
+charges you for it and POSTs the same payload with `from` and `body` filled in and
+`payment_required: false`. Re-triggering twice is refused, so you are never charged
+twice for one message.
 
 So a receiver needs one branch:
 
@@ -179,10 +195,8 @@ dedupe on `id`.
 
 Everything lives under **Dashboard → Webhooks**.
 
-> **Route renamed.** This page used to live at `/dashboard/inbound`; it's now at
-> **`/dashboard/webhooks`** (the old path no longer resolves). The page also hosts
-> a second field — the **Status Webhook** — for delivery-status updates on messages
-> you *send*, described below.
+That page also hosts a second field — the **Status Webhook** — for delivery-status
+updates on messages you *send*, described below.
 
 **Set your webhook URL.** Paste an `http(s)` URL into the webhook field and save.
 Every message arriving on any of your senders is POSTed there. Clear the field to
@@ -206,9 +220,9 @@ public internet.
 ## Status webhooks: delivery updates on messages you send
 
 Inbound webhooks fire on messages that arrive. The **status webhook** is the
-mirror image: it fires when a message you *sent* changes state — most importantly
-when an Android gateway relays a carrier delivery report and Core moves a recipient
-from `sent` to `delivered` (or `failed`).
+mirror image: it fires when a message you *sent* changes state — an Android gateway
+relaying a carrier delivery report, or WhatsApp acknowledging that a message reached
+the handset and was opened.
 
 Set the default **Status Webhook URL** in the same place — **Dashboard →
 Webhooks**, in its own field next to the inbound webhook. You can also override it
@@ -220,12 +234,11 @@ The payload is its own shape — a status change, not a message:
 
 ```json
 {
-  "message_id":       "7d3e9b21-6c44-4f18-a2e5-1b9c8d0f4a77",
-  "recipient":        "+258840000000",
-  "old_status":       "sent",
-  "new_status":       "delivered",
-  "delivery_receipt": { "status": "delivered", "timestamp": "2026-07-14T15:31:04+00:00" },
-  "timestamp":        "2026-07-14T15:31:04+00:00"
+  "error_code": null,
+  "message_id": "7d3e9b21-6c44-4f18-a2e5-1b9c8d0f4a77",
+  "recipient":  "+258840000000",
+  "status":     { "current": "delivered", "old": "sent" },
+  "timestamp":  "2026-07-14T15:31:04+00:00"
 }
 ```
 
@@ -233,15 +246,39 @@ The payload is its own shape — a status change, not a message:
 |---|---|
 | `message_id` | UUID of the message you sent — your correlation key back to the send call. |
 | `recipient` | The address the update is about. |
-| `old_status` | Status before this change (e.g. `sent`). |
-| `new_status` | Status after (`delivered` or `failed`). |
-| `delivery_receipt` | The provider's raw receipt (status, timestamp, any error code). |
+| `status.old` | Status before this change (e.g. `sent`). |
+| `status.current` | Status after — see the table below. |
+| `error_code` | Why it failed, as reported by the provider. `null` on a delivery. |
 | `timestamp` | When the change was recorded, RFC 3339 UTC. |
 
-Same handling rules as inbound: answer `2xx` fast, dedupe on `message_id`, and
-protect the URL (it isn't signed). See [turning an Android phone into a
+### The statuses a message walks
+
+| Status | Meaning | Channels |
+|---|---|---|
+| `sent` | Handed to the network. | all |
+| `delivered` | Reached the recipient's device. | all |
+| `read` | The recipient opened it. | WhatsApp only |
+| `failed` | The provider gave up. `error_code` says why. | all |
+
+`read` never arrives on SMS — the carrier has no way to know — and it only arrives
+on WhatsApp when the recipient has read receipts switched on. A message that stops
+at `delivered` is normal, not a fault.
+
+**Updates only ever move forward.** Providers do not order their callbacks: WhatsApp
+can hand over the *delivered* ack after the *read* one. S-Mailer drops any update
+that would walk a message backwards, so you never get a webhook telling you a read
+message un-read itself. `failed` is terminal — nothing supersedes it.
+
+**A status can fire more than once per message** — one webhook per recipient per
+change. Dedupe on `message_id` *plus* `recipient` *plus* `status.current`, not on
+`message_id` alone.
+
+Same handling rules as inbound: answer `2xx` fast and protect the URL (it isn't
+signed). See [turning an Android phone into a
 gateway]({% post_url 2026-07-05-turn-your-android-into-a-gateway %}) for where the
-delivery reports come from.
+SMS delivery reports come from, and [connecting
+WhatsApp]({% post_url 2026-07-20-connect-whatsapp-to-s-mailer %}) for the WhatsApp
+side.
 
 ---
 
@@ -255,15 +292,15 @@ The contract is short: **read the JSON, answer `2xx`, do the work afterwards.**
 curl -X POST https://your-app.example/webhooks/s-mailer \
   -H "Content-Type: application/json" \
   -d '{
-        "id": "9f2c1a7e-4b3d-4c8f-9e21-5a7b8c0d1e2f",
-        "from": "+258840000000",
-        "to": "+258849999999",
-        "channel": "sms",
         "body": "PAY 1500 order 4471",
+        "channel": "sms",
+        "client_id": "1a2b3c4d-5e6f-4071-8293-a4b5c6d7e8f9",
+        "from": "+258840000000",
+        "id": "9f2c1a7e-4b3d-4c8f-9e21-5a7b8c0d1e2f",
+        "payment_required": false,
         "received_at": "2026-07-14T15:30:00+00:00",
         "sender_id": "3c6f2b10-8d44-4a19-b7e5-2f9a1c4d6e88",
-        "client_id": "1a2b3c4d-5e6f-4071-8293-a4b5c6d7e8f9",
-        "payment_required": false
+        "to": "+258849999999"
       }'
 ```
 
@@ -372,14 +409,15 @@ your callback URL *is* the secret, so treat it like one:
   are yours, and never trust `body` straight into a shell, a query, or an eval.
 - If your infrastructure allows it, restrict the endpoint to S-Mailer's egress IP.
 
-**Handle `payment_required`.** When it's `true` the delivery is locked: you get the
-message id and nothing else, because your balance was too low to charge for it (see
-[Locked messages](#locked-messages-when-your-balance-runs-out)). Never parse a
-locked notice as if it were a message — `body`, `from` and `to` are simply not
-there. Treat it as an operational alert: log it, page whoever owns the account, and
-top up. Then re-trigger the message from the dashboard to receive it in full. Better
-still, set a low-balance alert under **Dashboard → Profile** and never see a locked
-delivery at all.
+**Handle `payment_required`.** When it's `true` the delivery is locked, because your
+balance was too low to charge for the message (see
+[Locked messages](#locked-messages-when-your-balance-runs-out)). The payload keeps
+its usual shape, so check the flag *before* you read anything — `from` and `body`
+arrive as `null`, and code that reaches straight for `body` will fall over on a
+null rather than a missing key. Treat it as an operational alert: log it, page
+whoever owns the account, and top up. Then re-trigger the message from the
+dashboard to receive it in full. Better still, set a low-balance alert under
+**Dashboard → Profile** and never see a locked delivery at all.
 
 **Keywords are substrings.** `pay` inside `repayment` will fire your trigger. Pick
 keywords with enough shape to avoid accidents, and validate the full body in your
