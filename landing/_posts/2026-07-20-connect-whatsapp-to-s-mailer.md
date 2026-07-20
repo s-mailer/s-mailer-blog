@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Now available: connect WhatsApp to S-Mailer"
-date: 2026-07-20 09:00:00 +0200
+date: 2026-07-20 04:00:00 +0200
 categories: announcements
 author: S-Mailer Team
 ---
