@@ -2,6 +2,7 @@
 layout: post
 title: "How to turn your Android into a powerful gateway for S-Mailer"
 date: 2026-07-05 09:00:00 +0200
+last_modified_at: 2026-07-18 04:37:28 +0200
 categories: guides
 author: S-Mailer Team
 ---
