@@ -2,7 +2,7 @@
 layout: post
 title: "How to turn your Android into a powerful gateway for S-Mailer"
 date: 2026-07-05 09:00:00 +0200
-last_modified_at: 2026-07-18 04:37:28 +0200
+last_modified_at: 2026-07-27 12:00:00 +0200
 categories: guides
 author: S-Mailer Team
 ---
@@ -40,11 +40,43 @@ that identifies this device (its ID, a one-time pairing code, and its SIMs). Tap
 ![Copy the pairing payload](/assets/img/guide-02-pairing.jpg)
 *The pairing screen with the Copy button.*
 
+## Which gateway should you pick? sms-co1 vs sms-co2 {#which-gateway}
+
+S-Mailer gives you **two Android gateway options**, and you choose which one when
+you register the sender. The app and the pairing payload are **exactly the same**
+for both — the only difference is how the phone waits for work. One device can
+even back one of each at the same time.
+
+### sms-co2 — set it and forget it
+
+- ✅ **The app does not need to stay open.** The phone can be locked, the app
+  swiped away or asleep — S-Mailer wakes it when there's a message to send.
+- ✅ **Survives Android's battery management**, so it's the better choice for an
+  unattended phone that just sits there being a gateway.
+- ⚠️ **Slightly higher latency**: if the phone has been idle, the first message
+  can take a few extra seconds while it wakes up.
+- ⚠️ Needs a **reliable internet connection** to be reachable.
+
+### sms-co1 — instant, but keep it running
+
+- ✅ **Lowest latency** — the phone holds a live connection, so it sends the very
+  moment a request arrives.
+- ⚠️ **The app must stay open and connected in the foreground**, and the phone
+  awake and online. Close the app or let the phone sleep and sending pauses until
+  you reopen it.
+- ⚠️ Needs the **battery-optimisation exemption** (the app prompts for it) and, in
+  practice, more babysitting for a phone meant to run unattended.
+
+**Rule of thumb:** for a phone that will run on its own, pick **sms-co2**. Pick
+**sms-co1** only when the phone is attended and you want the snappiest possible
+sends.
+
 ## Step 3 — Register the sender in the dashboard
 
 1. Log in to the [S-Mailer dashboard](https://mailer.smartek.co.mz).
 2. Go to **Senders → Register sender**.
-3. Choose the **Android SMS Gateway** option.
+3. Choose a gateway — **sms-co1** or **sms-co2** (see
+   [Which gateway?](#which-gateway) above).
 4. Paste the pairing payload you copied from the app.
 5. Save.
 
@@ -56,8 +88,9 @@ S-Mailer then pairs your device to the new sender.
 ## Step 4 — Confirm it is paired
 
 Back on the phone, the app switches to its dashboard and shows **"Paired with
-&lt;your company&gt;"**. Keep the app running and the phone online — it now holds a
-live connection to S-Mailer and waits for messages to send.
+&lt;your company&gt;"**. Keep the phone online and waiting for messages to send. If
+you paired on **sms-co1**, leave the app open in the foreground; on **sms-co2** you
+can close it — S-Mailer will wake it when there's work.
 
 ![Paired and ready](/assets/img/guide-04-paired.jpg)
 *The app showing the paired status.*
@@ -79,9 +112,9 @@ curl -X POST https://api.mailer.smartek.co.mz/api/v1/send \
       }'
 ```
 
-Your phone receives the send request over its live connection and sends the SMS
-through its SIM. The delivery status flows back to your dashboard — and, as of the
-latest app, all the way back to `delivered` (see below).
+Your phone receives the send request and sends the SMS through its SIM. The
+delivery status flows back to your dashboard — and, as of the latest app, all the
+way back to `delivered` (see below).
 
 ---
 
@@ -107,7 +140,7 @@ reached (or failed to reach) the recipient's handset. The app relays that report
 back through the connection, so a message can move past `sent`:
 
 ```
-phone radio → app (delivery report) → co1 gateway → S-Mailer Core → your status webhook
+phone radio → app (delivery report) → gateway → S-Mailer Core → your status webhook
 ```
 
 Core flips the recipient from `sent` to `delivered` (or `failed`) and, if you've
@@ -126,8 +159,8 @@ for the payload.
 - **Watch your SIM limits.** Carriers may rate-limit or block high SMS volumes —
   spread load across multiple devices for scale.
 - **`sent` means handed to the radio** — but Android delivery reports can update
-  it to `delivered`. The gateway relays the carrier's delivery report back through
-  co1 to S-Mailer Core, which flips the status and fires your status webhook (see
+  it to `delivered`. The gateway relays the carrier's delivery report back to
+  S-Mailer Core, which flips the status and fires your status webhook (see
   [From `sent` to `delivered`](#from-sent-to-delivered-delivery-reports)). Delivery
   reports depend on the carrier honouring them, so treat `delivered` as best-effort.
 
