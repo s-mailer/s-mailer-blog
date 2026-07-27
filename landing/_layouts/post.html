@@ -1,0 +1,23 @@
+---
+layout: default
+---
+<article class="post">
+  <header class="post-header">
+    <h1 class="post-title">{{ page.title }}</h1>
+    {%- assign updated = page.last_modified_at | default: page.date -%}
+    <p class="post-meta">
+      <time datetime="{{ page.date | date_to_xmlschema }}">
+        Published {{ page.date | date: "%B %-d, %Y" }}
+      </time>
+      &middot;
+      <time datetime="{{ updated | date_to_xmlschema }}">
+        Updated {{ updated | date: "%B %-d, %Y" }}
+      </time>
+      {%- if page.author %} &middot; {{ page.author }}{%- endif %}
+    </p>
+  </header>
+
+  <div class="post-content">
+    {{ content }}
+  </div>
+</article>

@@ -2,6 +2,7 @@
 layout: post
 title: "Inbound Webhooks & Triggers: How to receive and route SMS messages with S-Mailer"
 date: 2026-07-14 07:00:00 +0200
+last_modified_at: 2026-07-27 09:00:00 +0200
 categories: guides
 author: S-Mailer Team
 tags: [webhooks, inbound, sms, triggers, integration]
@@ -422,6 +423,55 @@ dashboard to receive it in full. Better still, set a low-balance alert under
 **Keywords are substrings.** `pay` inside `repayment` will fire your trigger. Pick
 keywords with enough shape to avoid accidents, and validate the full body in your
 handler rather than trusting that the match was meaningful.
+
+---
+
+## Controlling what your gateway forwards
+
+When your inbound number is an [Android gateway]({% post_url 2026-07-05-turn-your-android-into-a-gateway %}),
+the phone forwards the SMS it receives up to S-Mailer — which is what fires the
+webhooks and triggers above. But a gateway SIM also receives plenty of noise you
+don't want reaching your endpoint: bank OTPs, carrier notices, marketing blasts.
+The gateway app lets you decide exactly what gets forwarded, so only the messages
+you care about ever hit your webhook.
+
+Open the app and you'll find the controls split across two Settings tabs.
+
+### Settings → Forwarding
+
+- **SMS Forwarding** — the master switch. Off means nothing this phone receives is
+  forwarded (it still *sends* normally). Leave it on to use the finer controls.
+- **Custom senders & short codes** — most noise comes from **named senders** (like
+  `Vodacom` or `MPESA`) and **short codes** (like `1234`), not real phone numbers.
+  Turn this off and the gateway forwards only messages from an actual phone number,
+  quietly dropping OTP and marketing traffic. Leave it on if you *want* those (say,
+  a service that reads OTPs on your behalf).
+
+### Settings → Blocklist
+
+Need to silence one specific sender while forwarding everything else? Add it in the
+**Blocklist** tab — each number or name becomes a removable chip:
+
+```
++258 84 000 0000
+MyBank
+1234
+```
+
+Anything on the blocklist is never forwarded, even with the switches on. Phone
+numbers match however they're written — `+258…`, `0…`, or the local form all match
+the same entry, so you don't have to guess the exact format.
+
+### How they combine
+
+A received message is forwarded — and therefore reaches your webhook — only when
+**all** of these hold:
+
+1. SMS Forwarding is on, **and**
+2. the sender is not on your blocklist, **and**
+3. it's a real phone number *or* "Custom senders & short codes" is on.
+
+Tune these so your endpoint only ever sees the traffic your workflow actually needs.
 
 ---
 
