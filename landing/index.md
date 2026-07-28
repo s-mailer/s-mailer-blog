@@ -21,6 +21,11 @@ email from one simple API.
     <span class="link-card-title">API &amp; Docs</span>
     <span class="link-card-desc">Integrate S-Mailer into your app</span>
   </a>
+  <a class="link-card" href="{{ '/sdk/' | relative_url }}">
+    <i class="fa-solid fa-cubes"></i>
+    <span class="link-card-title">SDKs</span>
+    <span class="link-card-desc">Official PHP &amp; Node.js client libraries</span>
+  </a>
   <a class="link-card" href="https://smartek.co.mz">
     <i class="fa-solid fa-building"></i>
     <span class="link-card-title">Smartek</span>

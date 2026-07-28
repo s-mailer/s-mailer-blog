@@ -1,0 +1,280 @@
+---
+layout: default
+title: S-Mailer SDKs
+description: Official SDKs for integrating with the S-Mailer API.
+permalink: /sdk/
+---
+
+<style>
+  .sdk-hero { margin-bottom: 2rem; }
+  .sdk-hero h1 { margin-bottom: 0.25rem; }
+  .sdk-hero p { color: var(--gray-500); font-size: 1.05rem; margin-top: 0; }
+
+  /* CSS-only tabs — the radios drive everything, so it works with JS disabled. */
+  .sdk-tabs input[type="radio"] { position: absolute; opacity: 0; pointer-events: none; }
+
+  .sdk-tablist {
+    display: flex;
+    gap: 0.5rem;
+    border-bottom: 2px solid var(--gray-200);
+    margin-bottom: 1.5rem;
+  }
+  .sdk-tablist label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.1rem;
+    margin-bottom: -2px;
+    border-bottom: 2px solid transparent;
+    color: var(--gray-500);
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+  }
+  .sdk-tablist label:hover { color: var(--gray-800); }
+
+  .sdk-panel { display: none; }
+
+  #sdk-php:checked    ~ .sdk-panel#panel-php  { display: block; }
+  #sdk-node:checked   ~ .sdk-panel#panel-node { display: block; }
+  #sdk-php:checked    ~ .sdk-tablist label[for="sdk-php"],
+  #sdk-node:checked   ~ .sdk-tablist label[for="sdk-node"] {
+    color: var(--blue-600);
+    border-bottom-color: var(--blue-600);
+  }
+
+  .sdk-panel h2 { margin-top: 2rem; font-size: 1.25rem; }
+  .sdk-panel h2:first-child { margin-top: 0; }
+
+  .sdk-repo-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--gray-900);
+    color: #fff;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .sdk-repo-link:hover { background: var(--gray-800); }
+
+  .sdk-badges { display: flex; flex-wrap: wrap; gap: 0.75rem; margin: 0.75rem 0 0; }
+  .sdk-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.7rem;
+    background: var(--gray-100);
+    border: 1px solid var(--gray-200);
+    border-radius: 999px;
+    font-size: 0.85rem;
+    color: var(--gray-600);
+    text-decoration: none;
+  }
+  .sdk-badge:hover { border-color: var(--blue-600); color: var(--blue-600); }
+
+  .sdk-table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+  .sdk-table th, .sdk-table td {
+    text-align: left;
+    padding: 0.5rem 0.6rem;
+    border-bottom: 1px solid var(--gray-200);
+    vertical-align: top;
+  }
+  .sdk-table th { color: var(--gray-800); }
+  .sdk-table code { white-space: nowrap; }
+</style>
+
+<div class="sdk-hero">
+  <h1>S-Mailer SDKs</h1>
+  <p>Official SDKs for integrating with the S-Mailer API — send messages across SMS,
+     WhatsApp, and email, list activity, check your balance, and verify webhooks.</p>
+</div>
+
+<div class="sdk-tabs">
+  <input type="radio" name="sdk" id="sdk-php" checked>
+  <input type="radio" name="sdk" id="sdk-node">
+
+  <div class="sdk-tablist" role="tablist">
+    <label for="sdk-php"><i class="fa-brands fa-php" aria-hidden="true"></i> PHP</label>
+    <label for="sdk-node"><i class="fa-brands fa-node-js" aria-hidden="true"></i> Node.js</label>
+  </div>
+
+  <!-- ============================ PHP ============================ -->
+  <section class="sdk-panel" id="panel-php" role="tabpanel" aria-label="PHP SDK">
+    <div class="sdk-badges">
+      <a class="sdk-badge" href="https://packagist.org/packages/s-mailer/sdk"><i class="fa-solid fa-box"></i> packagist: s-mailer/sdk</a>
+      <a class="sdk-badge" href="https://github.com/s-mailer/sdk-php"><i class="fa-brands fa-github"></i> sdk-php</a>
+      <span class="sdk-badge"><i class="fa-solid fa-code-branch"></i> PHP 8.1+</span>
+      <span class="sdk-badge"><i class="fa-solid fa-scale-balanced"></i> MIT</span>
+    </div>
+
+    <h2>Installation</h2>
+    <pre><code>composer require s-mailer/sdk</code></pre>
+    <p>The SDK talks to any <a href="https://www.php-fig.org/psr/psr-18/">PSR-18</a> HTTP client.
+       If you don't already have one installed:</p>
+    <pre><code>composer require guzzlehttp/guzzle</code></pre>
+
+    <h2>Send a message</h2>
+    <pre><code>&lt;?php
+
+$mailer = new \SMailer\Client('CLT-XXXXXXXX', 'your-api-secret');
+
+$result = $mailer-&gt;messages-&gt;send([
+    'sender'    =&gt; 'sms-co1-xxxxxxxx',
+    'recipient' =&gt; '+258841234567',
+    'content'   =&gt; 'Hello from S-Mailer!',
+]);
+
+echo $result['message_id'];</code></pre>
+
+    <p>Send to many recipients with per-recipient template data:</p>
+    <pre><code>$mailer-&gt;messages-&gt;send([
+    'sender'           =&gt; 'sms-co1-xxxxxxxx',
+    'recipients'       =&gt; [
+        '+258841234567',
+        ['phone' =&gt; '+258842000001', 'data' =&gt; ['name' =&gt; 'Alice']],
+    ],
+    'content_template' =&gt; 'Hi ${name}, your code is ${code}.',
+]);</code></pre>
+
+    <h2>List, fetch, balance, channels</h2>
+    <pre><code>$sent     = $mailer-&gt;messages-&gt;listOutbound(['status' =&gt; 'delivered', 'limit' =&gt; 50]);
+$received = $mailer-&gt;messages-&gt;listInbound(['limit' =&gt; 50]);
+$one      = $mailer-&gt;messages-&gt;get($messageId);   // outbound or inbound (see `direction`)
+
+$balance  = $mailer-&gt;balance-&gt;get();       // int — current token balance
+$profile  = $mailer-&gt;balance-&gt;profile();   // incl. webhook_signing_key
+$channels = $mailer-&gt;channels-&gt;list();     // channels → providers → senders</code></pre>
+
+    <h2>Retrigger &amp; delete</h2>
+    <pre><code>$mailer-&gt;messages-&gt;retrigger($inboundId); // charge + re-deliver a locked (unpaid) inbound
+$mailer-&gt;messages-&gt;delete($messageId);    // delete an outbound or paid inbound</code></pre>
+
+    <h2>Verify webhooks</h2>
+    <p>S-Mailer signs every webhook with
+       <code>X-Mailer-Signature: hex(HMAC-SHA256(webhook_signing_key, raw_body))</code>.
+       Your <code>webhook_signing_key</code> comes from <code>$mailer-&gt;balance-&gt;profile()</code>.
+       Verify over the <strong>raw</strong> body, before decoding it.</p>
+    <pre><code>$raw = file_get_contents('php://input');
+$sig = $_SERVER['HTTP_X_MAILER_SIGNATURE'] ?? '';
+
+$event = (new \SMailer\Webhook())-&gt;parse($raw, $sig, $signingKey); // throws on bad signature
+if (($event['payment_required'] ?? false) === false) {
+    // handle the inbound message / status update
+}</code></pre>
+
+    <h2>Errors</h2>
+    <p>Non-2xx responses raise a <code>\SMailer\Exception\SMailerException</code> subclass
+       carrying <code>-&gt;errorCode</code> and <code>-&gt;statusCode</code>:</p>
+    <table class="sdk-table">
+      <thead><tr><th>Status</th><th>Exception</th><th>error</th></tr></thead>
+      <tbody>
+        <tr><td>401</td><td><code>AuthenticationException</code></td><td><code>AUTHENTICATION_FAILED</code></td></tr>
+        <tr><td>403</td><td><code>ForbiddenException</code></td><td><code>FORBIDDEN</code></td></tr>
+        <tr><td>400</td><td><code>BadRequestException</code> / <code>ValidationException</code></td><td><code>BAD_REQUEST</code></td></tr>
+        <tr><td>402</td><td><code>InsufficientTokensException</code></td><td><code>INSUFFICIENT_TOKENS</code></td></tr>
+        <tr><td>404</td><td><code>NotFoundException</code></td><td><code>NOT_FOUND</code></td></tr>
+        <tr><td>429</td><td><code>RateLimitException</code> (<code>-&gt;retryAfter</code>)</td><td><code>RATE_LIMIT_EXCEEDED</code></td></tr>
+      </tbody>
+    </table>
+
+    <h2>Reference</h2>
+    <p>Full method reference and options live in the repository README.</p>
+    <a class="sdk-repo-link" href="https://github.com/s-mailer/sdk-php"><i class="fa-brands fa-github"></i> github.com/s-mailer/sdk-php</a>
+  </section>
+
+  <!-- ============================ Node.js ============================ -->
+  <section class="sdk-panel" id="panel-node" role="tabpanel" aria-label="Node.js SDK">
+    <div class="sdk-badges">
+      <a class="sdk-badge" href="https://www.npmjs.com/package/@s-mailer/sdk"><i class="fa-brands fa-npm"></i> npm: @s-mailer/sdk</a>
+      <a class="sdk-badge" href="https://github.com/s-mailer/sdk-node"><i class="fa-brands fa-github"></i> sdk-node</a>
+      <span class="sdk-badge"><i class="fa-brands fa-node-js"></i> Node 18+</span>
+      <span class="sdk-badge"><i class="fa-solid fa-scale-balanced"></i> MIT</span>
+    </div>
+
+    <h2>Installation</h2>
+    <pre><code>npm install @s-mailer/sdk</code></pre>
+    <p>Ships ESM + CommonJS with TypeScript types. Node 18+ (uses the global <code>fetch</code>).</p>
+
+    <h2>Send a message</h2>
+    <pre><code>import { SMailer } from '@s-mailer/sdk';
+
+const mailer = new SMailer({
+  clientId: 'CLT-XXXXXXXX',
+  clientSecret: 'your-api-secret',
+});
+
+const res = await mailer.messages.send({
+  sender: 'sms-co1-xxxxxxxx',
+  recipient: '+258841234567',
+  content: 'Hello from S-Mailer!',
+});
+
+console.log(res.message_id);</code></pre>
+
+    <p>Send to many recipients with per-recipient template data:</p>
+    <pre><code>await mailer.messages.send({
+  sender: 'sms-co1-xxxxxxxx',
+  recipients: [
+    '+258841234567',
+    { phone: '+258842000001', data: { name: 'Alice' } },
+  ],
+  contentTemplate: 'Hi ${name}, your code is ${code}.',
+});</code></pre>
+
+    <h2>List, fetch, balance, channels</h2>
+    <pre><code>const sent     = await mailer.messages.listOutbound({ status: 'delivered', limit: 50 });
+const received = await mailer.messages.listInbound({ limit: 50 });
+const one      = await mailer.messages.get(messageId); // outbound or inbound (see `direction`)
+
+const balance  = await mailer.balance.get();     // number — current token balance
+const profile  = await mailer.balance.profile(); // incl. webhook_signing_key
+const channels = await mailer.channels.list();   // channels → providers → senders</code></pre>
+
+    <h2>Retrigger &amp; delete</h2>
+    <pre><code>await mailer.messages.retrigger(inboundId); // charge + re-deliver a locked (unpaid) inbound
+await mailer.messages.delete(messageId);    // delete an outbound or paid inbound</code></pre>
+
+    <h2>Verify webhooks</h2>
+    <p>S-Mailer signs every webhook with
+       <code>X-Mailer-Signature: hex(HMAC-SHA256(webhook_signing_key, raw_body))</code>.
+       Your <code>webhook_signing_key</code> comes from <code>mailer.balance.profile()</code>.
+       Verify over the <strong>raw</strong> body, before parsing it.</p>
+    <pre><code>import { webhooks } from '@s-mailer/sdk';
+
+// Express — raw body required
+app.post('/webhook', express.raw({ type: 'application/json' }), (req, res) =&gt; {
+  const raw = req.body.toString('utf8');
+  const sig = req.header('X-Mailer-Signature') ?? '';
+
+  const event = webhooks.parse(raw, sig, signingKey); // throws on bad signature
+  if (event.type === 'inbound' &amp;&amp; !event.payment_required) {
+    // handle the inbound message
+  } else if (event.type === 'status') {
+    // handle the delivery status update
+  }
+  res.sendStatus(200);
+});</code></pre>
+
+    <h2>Errors</h2>
+    <p>Non-2xx responses reject with a typed error extending <code>SMailerError</code>,
+       carrying <code>errorCode</code> and <code>statusCode</code>:</p>
+    <table class="sdk-table">
+      <thead><tr><th>Status</th><th>Error class</th><th>error</th></tr></thead>
+      <tbody>
+        <tr><td>401</td><td><code>AuthenticationError</code></td><td><code>AUTHENTICATION_FAILED</code></td></tr>
+        <tr><td>403</td><td><code>ForbiddenError</code></td><td><code>FORBIDDEN</code></td></tr>
+        <tr><td>400</td><td><code>BadRequestError</code> / <code>ValidationError</code></td><td><code>BAD_REQUEST</code></td></tr>
+        <tr><td>402</td><td><code>InsufficientTokensError</code></td><td><code>INSUFFICIENT_TOKENS</code></td></tr>
+        <tr><td>404</td><td><code>NotFoundError</code></td><td><code>NOT_FOUND</code></td></tr>
+        <tr><td>429</td><td><code>RateLimitError</code> (<code>retryAfter</code>)</td><td><code>RATE_LIMIT_EXCEEDED</code></td></tr>
+      </tbody>
+    </table>
+
+    <h2>Reference</h2>
+    <p>Full method reference and options live in the repository README.</p>
+    <a class="sdk-repo-link" href="https://github.com/s-mailer/sdk-node"><i class="fa-brands fa-github"></i> github.com/s-mailer/sdk-node</a>
+  </section>
+</div>
