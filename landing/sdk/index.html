@@ -152,6 +152,35 @@ $channels = $mailer-&gt;channels-&gt;list();     // channels → providers → s
     <pre><code>$mailer-&gt;messages-&gt;retrigger($inboundId); // charge + re-deliver a locked (unpaid) inbound
 $mailer-&gt;messages-&gt;delete($messageId);    // delete an outbound or paid inbound</code></pre>
 
+    <h2>WhatsApp advanced (media, buttons, location, contact, reactions)</h2>
+    <p>WhatsApp senders only. Text is billed at the outbound cost; media, buttons, location,
+       contact, and reactions at the advanced cost.</p>
+    <pre><code>$sender = 'whatsapp-co1-xxxxxxxx';
+$to     = '+258841234567';
+
+$mailer-&gt;whatsapp-&gt;sendText($sender, $to, 'Hello 👋');
+
+// Host media anywhere publicly reachable, then pass the URL.
+$mailer-&gt;whatsapp-&gt;sendMedia($sender, $to, [
+    'kind' =&gt; 'image', 'url' =&gt; 'https://cdn.example.com/promo.jpg', 'filename' =&gt; 'promo.jpg',
+], caption: 'Our new catalogue');
+
+$res = $mailer-&gt;whatsapp-&gt;sendButtons($sender, $to, 'Confirm your appointment?', [
+    ['id' =&gt; 'yes', 'title' =&gt; 'Yes'],
+    ['id' =&gt; 'no',  'title' =&gt; 'No'],
+], footer: 'S-Mailer');
+
+// Location pin.
+$mailer-&gt;whatsapp-&gt;sendLocation($sender, $to, -25.9655, 32.5832, title: 'Smartek HQ');
+
+// Contact card (phone is E.164; becomes the card's tap-to-chat number).
+$mailer-&gt;whatsapp-&gt;sendContact($sender, $to, [
+    'name' =&gt; 'John Doe', 'phone' =&gt; '+258841112222', 'organization' =&gt; 'Acme Lda',
+]);
+
+// React to a message (outbound or inbound); '' removes the reaction.
+$mailer-&gt;whatsapp-&gt;react($sender, $res['message_id'], '👍');</code></pre>
+
     <h2>Verify webhooks</h2>
     <p>S-Mailer signs every webhook with
        <code>X-Mailer-Signature: hex(HMAC-SHA256(webhook_signing_key, raw_body))</code>.
@@ -236,6 +265,34 @@ const channels = await mailer.channels.list();   // channels → providers → s
     <h2>Retrigger &amp; delete</h2>
     <pre><code>await mailer.messages.retrigger(inboundId); // charge + re-deliver a locked (unpaid) inbound
 await mailer.messages.delete(messageId);    // delete an outbound or paid inbound</code></pre>
+
+    <h2>WhatsApp advanced (media, buttons, location, contact, reactions)</h2>
+    <p>WhatsApp senders only. Text is billed at the outbound cost; media, buttons, location,
+       contact, and reactions at the advanced cost.</p>
+    <pre><code>const sender = 'whatsapp-co1-xxxxxxxx';
+const to = '+258841234567';
+
+await mailer.whatsapp.sendText(sender, to, 'Hello 👋');
+
+// Host media anywhere publicly reachable, then pass the URL.
+await mailer.whatsapp.sendMedia(sender, to,
+  { kind: 'image', url: 'https://cdn.example.com/promo.jpg', filename: 'promo.jpg' },
+  'Our new catalogue');
+
+const res = await mailer.whatsapp.sendButtons(sender, to, 'Confirm your appointment?', [
+  { id: 'yes', title: 'Yes' },
+  { id: 'no',  title: 'No' },
+], 'S-Mailer');
+
+// Location pin.
+await mailer.whatsapp.sendLocation(sender, to, -25.9655, 32.5832, 'Smartek HQ');
+
+// Contact card (phone is E.164; becomes the card's tap-to-chat number).
+await mailer.whatsapp.sendContact(sender, to,
+  { name: 'John Doe', phone: '+258841112222', organization: 'Acme Lda' });
+
+// React to a message (outbound or inbound); '' removes the reaction.
+await mailer.whatsapp.react(sender, res.message_id, '👍');</code></pre>
 
     <h2>Verify webhooks</h2>
     <p>S-Mailer signs every webhook with
