@@ -28,6 +28,14 @@ outside the Play Store, allow installs from your browser or file manager when
 prompted. Open the app and grant the SMS and phone permissions it asks for — it
 needs these to read your SIMs and send messages.
 
+> **Updating later?** Download the same link and install it straight over the app
+> you already have — it updates in place and keeps your pairing and message
+> history. One exception: if you installed a build from **before August 2026**,
+> Android will refuse it with *"app not installed"* or *"package conflicts with an
+> existing package"*. Those older builds were signed differently. Uninstall the old
+> app once, install this one, and every update after that is a plain in-place
+> upgrade.
+
 ![Install and grant permissions](/assets/img/guide-01-permissions.jpg)
 *The permissions screen on first launch.*
 
