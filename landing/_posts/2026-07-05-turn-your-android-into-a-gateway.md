@@ -28,14 +28,15 @@ speaks one of those two ways, and pairing will simply never complete in the wron
 one. If you are not sure which you picked, the sender's page in the dashboard
 says so.
 
-| | | |
+| Icon | On your phone | |
 |---|---|---|
-| **Blue icon** | **S-Mailer Gateway** | [⬇️ Download](https://github.com/s-mailer/s-mailer-blog/releases/latest/download/s-mailer-azul.apk) |
-| **Orange icon** | **S-Mailer Gateway 2** | [⬇️ Download](https://github.com/s-mailer/s-mailer-blog/releases/latest/download/s-mailer-laranja.apk) |
+| 🔵 **Blue** | **S-Mailer Gateway** | [⬇️ Download](https://github.com/s-mailer/s-mailer-blog/releases/latest/download/s-mailer-azul.apk) |
+| 🟠 **Orange** | **S-Mailer Gateway 2** | [⬇️ Download](https://github.com/s-mailer/s-mailer-blog/releases/latest/download/s-mailer-laranja.apk) |
 
-Both are called *S-Mailer Gateway* on the phone, so **the icon colour is how you
-tell them apart** on your home screen. You can install both on the same phone —
-one for each sender — and they will not interfere with each other.
+On the phone they appear as *S-Mailer Gateway* and *S-Mailer Gateway 2*, and they
+look the same once opened — so **the icon colour is how you tell them apart** on
+your home screen. You can install both on the same phone, one for each sender, and
+they will not interfere with each other.
 
 Install on the phone you want to use as a gateway. Because it is installed outside
 the Play Store, allow installs from your browser or file manager when prompted.
