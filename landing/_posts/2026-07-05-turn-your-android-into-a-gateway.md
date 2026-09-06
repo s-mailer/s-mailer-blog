@@ -2,7 +2,7 @@
 layout: post
 title: "How to turn your Android into a powerful gateway for S-Mailer"
 date: 2026-07-05 09:00:00 +0200
-last_modified_at: 2026-07-27 12:00:00 +0200
+last_modified_at: 2026-09-02 18:00:00 +0200
 categories: guides
 author: S-Mailer Team
 ---
@@ -15,26 +15,42 @@ This guide walks you through it, step by step.
 
 - An Android phone (Android 8.0 / API 26 or newer) with an active SIM.
 - An S-Mailer account with a token balance. [Sign up here](https://mailer.smartek.co.mz).
-- The **S-Mailer** Android app — [**download the APK**](https://github.com/s-mailer/s-mailer-blog/releases/latest/download/s-mailer.apk).
+- The **S-Mailer Gateway** app — there are two, and which one you install depends
+  on the sender you created in the dashboard. [Pick yours below](#step-1--install-the-right-app).
 
 ---
 
-## Step 1 — Install the app
+## Step 1 — Install the right app
 
-**[⬇️ Download the S-Mailer app (APK)](https://github.com/s-mailer/s-mailer-blog/releases/latest/download/s-mailer.apk)**
+There are **two** gateway apps, and they are not interchangeable. When you create
+a sender in the dashboard you choose how the phone will be reached; each app
+speaks one of those two ways, and pairing will simply never complete in the wrong
+one. If you are not sure which you picked, the sender's page in the dashboard
+says so.
 
-Install it on the phone you want to use as a gateway. Because it is installed
-outside the Play Store, allow installs from your browser or file manager when
-prompted. Open the app and grant the SMS and phone permissions it asks for — it
-needs these to read your SIMs and send messages.
+| Icon | On your phone | |
+|---|---|---|
+| 🔵 **Blue** | **S-Mailer Gateway** | [⬇️ Download](https://github.com/s-mailer/s-mailer-blog/releases/latest/download/s-mailer-azul.apk) |
+| 🟠 **Orange** | **S-Mailer Gateway 2** | [⬇️ Download](https://github.com/s-mailer/s-mailer-blog/releases/latest/download/s-mailer-laranja.apk) |
 
-> **Updating later?** Download the same link and install it straight over the app
-> you already have — it updates in place and keeps your pairing and message
-> history. One exception: if you installed a build from **before August 2026**,
-> Android will refuse it with *"app not installed"* or *"package conflicts with an
-> existing package"*. Those older builds were signed differently. Uninstall the old
-> app once, install this one, and every update after that is a plain in-place
-> upgrade.
+On the phone they appear as *S-Mailer Gateway* and *S-Mailer Gateway 2*, and they
+look the same once opened — so **the icon colour is how you tell them apart** on
+your home screen. You can install both on the same phone, one for each sender, and
+they will not interfere with each other.
+
+Install on the phone you want to use as a gateway. Because it is installed outside
+the Play Store, allow installs from your browser or file manager when prompted.
+Open the app and grant the SMS and phone permissions it asks for — it needs these
+to read your SIMs and send messages.
+
+> **Already using the old single app?** This release replaces it with the two
+> above, and Android treats them as new apps rather than an update — so install
+> the one you need, pair it, and only then uninstall the old one. If Android
+> refuses an install with *"app not installed"* or *"package conflicts with an
+> existing package"*, uninstall the old app first.
+>
+> Once you are on one of the new apps, later updates to it install straight over
+> the top and keep your pairing and message history.
 
 ![Install and grant permissions](/assets/img/guide-01-permissions.jpg)
 *The permissions screen on first launch.*
@@ -138,7 +154,8 @@ preferred SIM. As of **app 0.1.3** you can pick the sending SIM yourself:
 
 Every message this gateway sends from then on goes out on the SIM you picked —
 handy when one line has a better SMS bundle or a specific sender identity. Grab
-the [latest APK](https://github.com/s-mailer/s-mailer-blog/releases/latest/download/s-mailer.apk)
+the latest APK ([blue](https://github.com/s-mailer/s-mailer-blog/releases/latest/download/s-mailer-azul.apk) ·
+[orange](https://github.com/s-mailer/s-mailer-blog/releases/latest/download/s-mailer-laranja.apk))
 to get the picker.
 
 ## From `sent` to `delivered`: delivery reports
