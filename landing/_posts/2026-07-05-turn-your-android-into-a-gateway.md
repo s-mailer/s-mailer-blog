@@ -2,7 +2,7 @@
 layout: post
 title: "How to turn your Android into a powerful gateway for S-Mailer"
 date: 2026-07-05 09:00:00 +0200
-last_modified_at: 2026-09-02 18:00:00 +0200
+last_modified_at: 2026-09-11 09:00:00 +0200
 categories: guides
 author: S-Mailer Team
 ---
@@ -15,28 +15,35 @@ This guide walks you through it, step by step.
 
 - An Android phone (Android 8.0 / API 26 or newer) with an active SIM.
 - An S-Mailer account with a token balance. [Sign up here](https://mailer.smartek.co.mz).
-- The **S-Mailer Gateway** app — there are two, and which one you install depends
-  on the sender you created in the dashboard. [Pick yours below](#step-1--install-the-right-app).
+- The **S-Mailer Gateway** app — there are two, one per provider (`sms-co1` and
+  `sms-co2`), and which one you install depends on the sender you created in the
+  dashboard. [Pick yours below](#step-1--install-the-right-app).
 
 ---
 
 ## Step 1 — Install the right app
 
 There are **two** gateway apps, and they are not interchangeable. When you create
-a sender in the dashboard you choose how the phone will be reached; each app
-speaks one of those two ways, and pairing will simply never complete in the wrong
-one. If you are not sure which you picked, the sender's page in the dashboard
-says so.
+a sender in the dashboard you pick how the phone will be reached, and the sender's
+page then shows that choice as a **provider**: `sms-co1` or `sms-co2`. Each app
+speaks one of the two, and pairing simply never completes in the wrong one.
 
-| Icon | On your phone | |
+**Open your sender in the dashboard, read the provider, and download the file with
+the same name.**
+
+| Your sender says | Download | On your phone |
 |---|---|---|
-| 🔵 **Blue** | **S-Mailer Gateway** | [⬇️ Download](https://github.com/s-mailer/s-mailer-blog/releases/latest/download/s-mailer-azul.apk) |
-| 🟠 **Orange** | **S-Mailer Gateway 2** | [⬇️ Download](https://github.com/s-mailer/s-mailer-blog/releases/latest/download/s-mailer-laranja.apk) |
+| `sms-co1` | [⬇️ s-mailer-sms-co1.apk](https://github.com/s-mailer/s-mailer-blog/releases/latest/download/s-mailer-sms-co1.apk) | 🔵 **S-Mailer Gateway**, blue icon |
+| `sms-co2` | [⬇️ s-mailer-sms-co2.apk](https://github.com/s-mailer/s-mailer-blog/releases/latest/download/s-mailer-sms-co2.apk) | 🟠 **S-Mailer Gateway 2**, orange icon |
 
-On the phone they appear as *S-Mailer Gateway* and *S-Mailer Gateway 2*, and they
-look the same once opened — so **the icon colour is how you tell them apart** on
-your home screen. You can install both on the same phone, one for each sender, and
-they will not interfere with each other.
+`sms-co2` is the one to prefer for a new sender: it keeps working when the phone
+drops off the network for a while and reconnects, where `sms-co1` needs the app to
+hold a live connection. Either way, install the one your sender was created with —
+you cannot swap an existing sender to the other app.
+
+Once installed, the two look identical when opened, so **the icon colour is how you
+tell them apart** on your home screen. You can install both on the same phone, one
+sender each, and they will not interfere with each other.
 
 Install on the phone you want to use as a gateway. Because it is installed outside
 the Play Store, allow installs from your browser or file manager when prompted.
@@ -154,8 +161,8 @@ preferred SIM. As of **app 0.1.3** you can pick the sending SIM yourself:
 
 Every message this gateway sends from then on goes out on the SIM you picked —
 handy when one line has a better SMS bundle or a specific sender identity. Grab
-the latest APK ([blue](https://github.com/s-mailer/s-mailer-blog/releases/latest/download/s-mailer-azul.apk) ·
-[orange](https://github.com/s-mailer/s-mailer-blog/releases/latest/download/s-mailer-laranja.apk))
+the latest APK ([sms-co1](https://github.com/s-mailer/s-mailer-blog/releases/latest/download/s-mailer-sms-co1.apk) ·
+[sms-co2](https://github.com/s-mailer/s-mailer-blog/releases/latest/download/s-mailer-sms-co2.apk))
 to get the picker.
 
 ## From `sent` to `delivered`: delivery reports
