@@ -2,7 +2,7 @@
 layout: post
 title: "How to turn your Android into a powerful gateway for S-Mailer"
 date: 2026-07-05 09:00:00 +0200
-last_modified_at: 2026-09-11 09:00:00 +0200
+last_modified_at: 2026-09-12 10:00:00 +0200
 categories: guides
 author: S-Mailer Team
 ---
@@ -33,16 +33,17 @@ the same name.**
 
 | Your sender says | Download | On your phone |
 |---|---|---|
-| `sms-co1` | [⬇️ s-mailer-sms-co1.apk](https://github.com/s-mailer/s-mailer-blog/releases/latest/download/s-mailer-sms-co1.apk) | 🔵 **S-Mailer Gateway**, blue icon |
-| `sms-co2` | [⬇️ s-mailer-sms-co2.apk](https://github.com/s-mailer/s-mailer-blog/releases/latest/download/s-mailer-sms-co2.apk) | 🟠 **S-Mailer Gateway 2**, orange icon |
+| `sms-co1` | [⬇️ s-mailer-sms-co1.apk](https://github.com/s-mailer/s-mailer-blog/releases/latest/download/s-mailer-sms-co1.apk) | 🔵 **S-Mailer Gateway**, blue logo |
+| `sms-co2` | [⬇️ s-mailer-sms-co2.apk](https://github.com/s-mailer/s-mailer-blog/releases/latest/download/s-mailer-sms-co2.apk) | 🟡 **S-Mailer Gateway 2**, gold logo |
 
 `sms-co2` is the one to prefer for a new sender: it keeps working when the phone
 drops off the network for a while and reconnects, where `sms-co1` needs the app to
 hold a live connection. Either way, install the one your sender was created with —
 you cannot swap an existing sender to the other app.
 
-Once installed, the two look identical when opened, so **the icon colour is how you
-tell them apart** on your home screen. You can install both on the same phone, one
+Once installed, the two look identical when opened, so **the icon is how you tell
+them apart** on your home screen: same logo on the same white background, blue in
+one and gold in the other. You can install both on the same phone, one
 sender each, and they will not interfere with each other.
 
 Install on the phone you want to use as a gateway. Because it is installed outside
